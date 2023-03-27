@@ -1,0 +1,202 @@
+#
+# 
+#
+# A Connect Four Board class
+#
+# 
+#
+
+class Board:
+    """ a data type for a Connect Four board with arbitrary dimensions
+    """   
+    ### add your constructor here ###
+    def  __init__(self, height, width): 
+        self.height = height 
+        self.width = width
+        self.slots = []
+        for j in range(self.height):
+            self.slots +=[[' ' for i in range(self.width)]]
+        
+        
+    def __repr__(self):
+        """ Returns a string that represents a Board object.
+        """
+        s = ''         #  begin with an empty string
+
+        # add one row of slots at a time to s
+        for row in range(self.height):
+            s += '|'   # one vertical bar at the start of the row
+
+            for col in range(self.width):
+                s += self.slots[row][col] + '|'
+
+            s += '\n'  # newline at the end of the row
+        s += '-'*self.width
+        ### add your code here ###
+        s += '-'*(self.width+1)
+        s += '\n'
+        for i in range(self.width): 
+            s += ' '
+            if i>9: 
+                s+= str(i%10)
+            else: 
+                s +=  str(i)
+        return s
+        
+    def add_checker(self, checker, col):
+        """ adds the specified checker (either 'X' or 'O') to the
+            column with the specified index col in the called Board.
+            inputs: checker is either 'X' or 'O'
+                    col is a valid column index
+        """
+        assert(checker == 'X' or checker == 'O')
+        assert(col >= 0 and col < self.width)
+        
+        ### put the rest of the method here ###
+        row = 0
+        for i in range(self.height): 
+            if self.slots[i][col] == ' ': 
+                row+= 1
+        if row>0:
+            self.slots[row-1][col] = checker
+    
+    ### add your reset method here ###
+    def reset(self): 
+        """returns the board back to its orginial state with the blank
+        for each column and row"""
+        self.__init__(self.height, self.width)
+        self.__repr__()
+        
+    def add_checkers(self, colnums):
+        """ takes a string of column numbers and places alternating
+            checkers in those columns of the called Board object,
+            starting with 'X'.
+            input: colnums is a string of valid column numbers
+        """
+        checker = 'X'   # start by playing 'X'
+
+        for col_str in colnums:
+            col = int(col_str)
+            if 0 <= col < self.width:
+                self.add_checker(checker, col)
+
+            if checker == 'X':
+                checker = 'O'
+            else:
+                checker = 'X'
+
+    ### add your remaining methods here
+    def can_add_to(self, col): 
+        """checks if a checker can be added to the input col
+        returns True if it can and False if it cant"""
+        if col<0 or col>(self.width-1): 
+            return False
+        else: 
+            if self.slots[0][col]== ' ': 
+                return True
+            else: 
+                return False
+        
+    
+    def is_full(self): 
+        """checks if the board is full of checkers or has no more slots
+        if it doesnt then it returns True if it does then it return False"""
+        for row in range(self.height): 
+            for column in range(self.width): 
+                if self.slots[row][column] == ' ': 
+                    return False
+        return True
+    
+    def remove_checker(self, col): 
+        """removes the top checker of the column inputed"""
+        for i in range(self.height): 
+            if self.slots[i][col] == 'X' or self.slots[i][col] == 'O': 
+                self.slots[i][col] = ' '
+                break
+            else: 
+                self.slots[i][col]= ' '
+    
+    def horizontal(self,checker,col): 
+        if col>3:
+            for row in range(self.height): 
+                for col in range(col-3): 
+                    if self.slots[row][col] == checker and \
+                    self.slots[row][col+1] == checker and \
+                    self.slots[row][col+2] == checker and \
+                    self.slots[row][col+3] == checker: 
+                        return True          
+        else: 
+            return False
+        
+    def vertical(self,checker,col): 
+        for row in range(self.height-3): 
+            for col in range(col): 
+                if self.slots[row][col] == checker and \
+                   self.slots[row+1][col] == checker and \
+                   self.slots[row+2][col] == checker and \
+                   self.slots[row+3][col] == checker: 
+                       return True 
+        return False 
+    
+    def up_cross(self,checker,col):
+        if col>3:
+            for row in range(self.height): 
+                for i in range(col-3): 
+                 if row >3 and \
+                    self.slots[row][col] == checker and \
+                    self.slots[row-1][col+1] == checker and \
+                    self.slots[row-2][col+2] == checker and \
+                    self.slots[row-3][col+3] == checker: 
+                        return True 
+        return False
+    
+    def down_corss(self,checker,col):
+       if col>3:
+           for row in range(self.height-3): 
+               for col in range(col-3): 
+                   if self.slots[row][col] == checker and \
+                   self.slots[row+1][col+1] == checker and \
+                   self.slots[row+2][col+2] == checker and \
+                   self.slots[row+3][col+3] == checker: 
+                       return True
+       return False 
+    
+    def is_win_for(self, checker): 
+        """checks the board and returns True if the input checkers has 
+        4 in a row"""
+        for row in range(self.height): 
+            for col in range(self.width-3): 
+                if self.slots[row][col] == checker and \
+                    self.slots[row][col+1] == checker and \
+                    self.slots[row][col+2] == checker and \
+                    self.slots[row][col+3] == checker: 
+                        return True
+        for row in range(self.height-3): 
+            for col in range(self.width): 
+                if self.slots[row][col] == checker and \
+                   self.slots[row+1][col] == checker and \
+                   self.slots[row+2][col] == checker and \
+                   self.slots[row+3][col] == checker: 
+                       return True 
+        for row in range(self.height-3): 
+             for col in range(self.width-3): 
+                 if self.slots[row][col] == checker and \
+                    self.slots[row+1][col+1] == checker and \
+                    self.slots[row+2][col+2] == checker and \
+                    self.slots[row+3][col+3] == checker: 
+                        return True
+        for row in range(self.height): 
+             for col in range(self.width-3): 
+                 if row >3 and \
+                    self.slots[row][col] == checker and \
+                    self.slots[row-1][col+1] == checker and \
+                    self.slots[row-2][col+2] == checker and \
+                    self.slots[row-3][col+3] == checker: 
+                        return True 
+        return False
+ 
+                       
+        
+                    
+    
+ 

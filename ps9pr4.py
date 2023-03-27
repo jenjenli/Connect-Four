@@ -1,0 +1,77 @@
+#
+# 
+#
+# AI Player for use in Connect Four  
+#
+
+import random  
+from ps9pr3 import *
+
+class AIPlayer(Player):
+    
+    def __init__(self, checker, tiebreak, lookahead):
+        """inherits some claues like checkers from the player class while assigning new 
+        variables"""
+        assert(checker == 'X' or checker == 'O')
+        assert(tiebreak == 'LEFT' or tiebreak == 'RIGHT' or tiebreak == 'RANDOM')
+        assert(lookahead >= 0)
+        super().__init__(checker)
+        self.tiebreak = tiebreak
+        self.lookahead = lookahead
+        
+    def __repr__(self): 
+        """the representation of how AIPlayer looks"""
+        return  'Player ' +self.checker + ' ('+ self.tiebreak+', '+ str(self.lookahead)+')'
+     
+    def max_score_column(self, scores): 
+        """determines the best column the AI should place their checker"""
+        max_score =[]
+        a = max(scores) 
+        for i in range(len(scores)): 
+            if scores[i] == a: 
+                max_score += [i]
+        if len(max_score)>1 and self.tiebreak == "LEFT": 
+            return max_score[0]
+        if len(max_score)>1 and self.tiebreak == "RIGHT": 
+            return max_score[-1]
+        if len(max_score)>1 and self.tiebreak == "RANDOM": 
+            return random.choice(max_score)
+        else: 
+            return max_score[0]
+
+
+            
+    def  scores_for(self, b):
+        """determines the score for each column if a checker was added to that column
+        also predicts the players next move"""
+        scores=[50]*b.width
+        if self.lookahead>=0:
+            for col in range(b.width): 
+                if b.can_add_to(col)== False: 
+                    scores[col] =-1
+                elif b.is_win_for(self.checker): 
+                    scores[col] = 100
+                elif b.is_win_for(self.opponent_checker()): 
+                    scores[col] = 0
+                else: 
+                    if self.lookahead>0:
+                        b.add_checker(self.checker,col)
+                        opponent = AIPlayer(self.opponent_checker(),self.tiebreak, self.lookahead-1)
+                        opp_scores = opponent.scores_for(b)
+                        if max(opp_scores)==100: 
+                            scores[col]=0
+                        elif max(opp_scores)==0:
+                            scores[col]=100
+                        else: 
+                            scores[col]=50
+                        b.remove_checker(col)
+        return scores
+    
+    def next_move(self, b): 
+        """applies the best move for the AI to win according to the board"""
+        self.num_moves+=1
+        a=self.max_score_column(self.scores_for(b))
+        #b.add_checker(self.checker, a)
+        return a
+           
+    
