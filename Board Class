@@ -1,15 +1,7 @@
-#
-# 
-#
-# A Connect Four Board class
-#
-# 
-#
 
 class Board:
     """ a data type for a Connect Four board with arbitrary dimensions
     """   
-    ### add your constructor here ###
     def  __init__(self, height, width): 
         self.height = height 
         self.width = width
@@ -21,18 +13,18 @@ class Board:
     def __repr__(self):
         """ Returns a string that represents a Board object.
         """
-        s = ''         #  begin with an empty string
+        s = ''         
 
-        # add one row of slots at a time to s
+        
         for row in range(self.height):
-            s += '|'   # one vertical bar at the start of the row
+            s += '|' 
 
             for col in range(self.width):
                 s += self.slots[row][col] + '|'
 
-            s += '\n'  # newline at the end of the row
+            s += '\n'  
         s += '-'*self.width
-        ### add your code here ###
+       
         s += '-'*(self.width+1)
         s += '\n'
         for i in range(self.width): 
@@ -52,7 +44,7 @@ class Board:
         assert(checker == 'X' or checker == 'O')
         assert(col >= 0 and col < self.width)
         
-        ### put the rest of the method here ###
+       
         row = 0
         for i in range(self.height): 
             if self.slots[i][col] == ' ': 
@@ -60,7 +52,7 @@ class Board:
         if row>0:
             self.slots[row-1][col] = checker
     
-    ### add your reset method here ###
+
     def reset(self): 
         """returns the board back to its orginial state with the blank
         for each column and row"""
@@ -73,7 +65,7 @@ class Board:
             starting with 'X'.
             input: colnums is a string of valid column numbers
         """
-        checker = 'X'   # start by playing 'X'
+        checker = 'X'   
 
         for col_str in colnums:
             col = int(col_str)
@@ -85,7 +77,7 @@ class Board:
             else:
                 checker = 'X'
 
-    ### add your remaining methods here
+   
     def can_add_to(self, col): 
         """checks if a checker can be added to the input col
         returns True if it can and False if it cant"""
